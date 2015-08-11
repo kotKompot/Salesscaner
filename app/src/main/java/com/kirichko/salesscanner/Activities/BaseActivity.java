@@ -1,5 +1,6 @@
 package com.kirichko.salesscanner.Activities;
 
+import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.kirichko.salesscanner.Adapters.AppSectionsPagerAdapter;
 import com.kirichko.salesscanner.R;
+import com.kirichko.salesscanner.Services.ScannerAndUpdateService;
 
 
 /**
@@ -73,5 +75,7 @@ public class BaseActivity extends AppCompatActivity implements ActionBar.TabList
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
     }
+
+
 
 }
