@@ -1,26 +1,32 @@
 package com.kirichko.salesscanner.Services;
 
+import android.app.ActivityManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Киричко on 10.08.2015.
  */
-public class ScannerAndUpdateService extends Service {
+ public class ScannerAndUpdateService extends Service {
 
     @Nullable
     @Override
@@ -42,80 +48,69 @@ public class ScannerAndUpdateService extends Service {
     }
 
     void someTask() {
+    final Handler handler = new Handler() {
+        public void handleMessage(android.os.Message msg) {
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    (String) msg.obj, Toast.LENGTH_SHORT);
+            toast.show();
+
+        };
+    };
 
         new Thread(new Runnable() {
             public void run() {
 
+                String filename = "myfile";
+                String string = "53";
+                FileOutputStream outputStream;
+
+                try
+                {
+                    outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
+                    outputStream.write(string.getBytes());
+                    outputStream.close();
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+                final String TESTSTRING = new String("Hello Android");
+                FileInputStream fIn = null;
+                try {
+                    fIn = openFileInput(filename);
+
+                    InputStreamReader isr = new InputStreamReader(fIn);
+                    char[] inputBuffer = new char[TESTSTRING.length()];
+                    isr.read(inputBuffer);
+                    String readString = new String(inputBuffer);
+                    handler.sendMessage(handler.obtainMessage(0, readString));
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+
+                /*
                 try {
                     TimeUnit.SECONDS.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
-                btnCheckUsbDevClick();
+                */
             }
         }).start();
-
     }
 
-    public void btnCheckUsbDevClick() {
-        String fullpath, foldername, filename;
-        foldername = "temp/myFolder";
-        filename = "myFile.txt";
-
-        //Сохранение файла на карту SD:
-        fullpath = getSDcardPath()
-                + "/" + foldername
-                + "/" + filename;
-        SaveFile(fullpath, "Этот текст сохранен на карту SD");
-    }
-
-    private String getSDcardPath() {
-        String exts = Environment.getExternalStorageDirectory().getPath();
-        String sdCardPath = null;
-        try {
-            FileReader fr = new FileReader(new File("/proc/mounts"));
-            BufferedReader br = new BufferedReader(fr);
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.contains("secure") || line.contains("asec"))
-                    continue;
-                if (line.contains("fat")) {
-                    String[] pars = line.split("\\s");
-                    if (pars.length < 2)
-                        continue;
-                    if (pars[1].equals(exts))
-                        continue;
-                    sdCardPath = pars[1];
-                    break;
+    public static boolean isServiceRunning(Context context) {
+                ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+                for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+                    if (ScannerAndUpdateService.class.getName().equals(service.service.getClassName())) {
+                        return true;
+                    }
                 }
-            }
-            fr.close();
-            br.close();
-            return sdCardPath;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return sdCardPath;
-    }
-
-    public void SaveFile(String filePath, String FileContent) {
-        //Создание объекта файла.
-        File fhandle = new File(filePath);
-        try {
-            //Если нет директорий в пути, то они будут созданы:
-            if (!fhandle.getParentFile().exists())
-                fhandle.getParentFile().mkdirs();
-            //Если файл существует, то он будет перезаписан:
-            fhandle.createNewFile();
-            FileOutputStream fOut = new FileOutputStream(fhandle);
-            OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
-            myOutWriter.write(FileContent);
-            myOutWriter.close();
-            fOut.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-
-        }
+                return false;
     }
 }

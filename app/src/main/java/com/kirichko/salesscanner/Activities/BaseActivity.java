@@ -1,16 +1,24 @@
 package com.kirichko.salesscanner.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 
 import com.kirichko.salesscanner.Adapters.AppSectionsPagerAdapter;
 import com.kirichko.salesscanner.R;
 import com.kirichko.salesscanner.Services.ScannerAndUpdateService;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 
 /**
@@ -27,6 +35,13 @@ public class BaseActivity extends AppCompatActivity implements ActionBar.TabList
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        if(!ScannerAndUpdateService.isServiceRunning(this))
+        {
+            Intent serviceIntent = new Intent(this, ScannerAndUpdateService.class);
+            this.startService(serviceIntent);
+        }
+
 
         setContentView(R.layout.activity_base);
 
