@@ -48,50 +48,8 @@ import java.util.concurrent.TimeUnit;
     }
 
     void someTask() {
-    final Handler handler = new Handler() {
-        public void handleMessage(android.os.Message msg) {
-            Toast toast = Toast.makeText(getApplicationContext(),
-                    (String) msg.obj, Toast.LENGTH_SHORT);
-            toast.show();
-
-        };
-    };
-
         new Thread(new Runnable() {
             public void run() {
-
-                String filename = "myfile";
-                String string = "53";
-                FileOutputStream outputStream;
-
-                try
-                {
-                    outputStream = openFileOutput(filename, Context.MODE_PRIVATE);
-                    outputStream.write(string.getBytes());
-                    outputStream.close();
-                }
-                catch (Exception e)
-                {
-                    e.printStackTrace();
-                }
-                final String TESTSTRING = new String("Hello Android");
-                FileInputStream fIn = null;
-                try {
-                    fIn = openFileInput(filename);
-
-                    InputStreamReader isr = new InputStreamReader(fIn);
-                    char[] inputBuffer = new char[TESTSTRING.length()];
-                    isr.read(inputBuffer);
-                    String readString = new String(inputBuffer);
-                    handler.sendMessage(handler.obtainMessage(0, readString));
-
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-
 
                 /*
                 try {
