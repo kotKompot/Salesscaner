@@ -1,34 +1,26 @@
 package com.kirichko.salesscanner.Services;
 
 import android.app.ActivityManager;
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Environment;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
-import android.support.annotation.Nullable;
-import android.util.Log;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import com.kirichko.salesscanner.Activities.BaseActivity;
+import com.kirichko.salesscanner.R;
+import com.kirichko.salesscanner.datamodels.SettingsFileHolder;
+
 import java.util.concurrent.TimeUnit;
+
 
 /**
  * Created by Киричко on 10.08.2015.
  */
  public class ScannerAndUpdateService extends Service {
 
-    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -37,7 +29,21 @@ import java.util.concurrent.TimeUnit;
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        someTask();
+            if (!SettingsFileHolder.isAlreayReaded) {
+                if (SettingsFileHolder.isSettingFileExists(this)) {
+                    SettingsFileHolder.readSettingsFile(this);
+                    if (SettingsFileHolder.mEnableSalesScanner) {
+                        startScannAndUpdateCycle();
+                    }
+                } else {
+                    SettingsFileHolder.createNewSettingFile(this);
+                    startScannAndUpdateCycle();
+                }
+            } else {
+                if (SettingsFileHolder.mEnableSalesScanner) {
+                    startScannAndUpdateCycle();
+                }
+            }
 
         return START_STICKY;
     }
@@ -45,22 +51,49 @@ import java.util.concurrent.TimeUnit;
     @Override
     public void onDestroy() {
         //возможно сдесь надо будет отключить базу данных
+        Toast.makeText(this,"Цикл завершен",Toast.LENGTH_LONG).show();
+        stopForeground(true);
     }
 
-    void someTask() {
+    void startScannAndUpdateCycle() {
+
+
+        //del
+
+        Notification note=new Notification(R.drawable.sales,
+                "Запуск поиска",
+                System.currentTimeMillis());
+        Intent i=new Intent(this, BaseActivity.class);
+
+        i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|
+                Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        PendingIntent pi=PendingIntent.getActivity(this, 0,
+                i, 0);
+
+        note.setLatestEventInfo(this, "Sales Scanning",
+                "Идет поиск",
+                pi);
+        note.flags|=Notification.FLAG_NO_CLEAR;
+
+        startForeground(1337, note);
+        ///del
+
+
+
+        Toast.makeText(this,"Цикл запущен",Toast.LENGTH_LONG).show();
         new Thread(new Runnable() {
             public void run() {
-
-                /*
                 try {
-                    TimeUnit.SECONDS.sleep(100);
+                    TimeUnit.SECONDS.sleep(300);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                */
+            stopSelf();
             }
         }).start();
     }
+
 
     public static boolean isServiceRunning(Context context) {
                 ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);

@@ -13,7 +13,10 @@ import com.kirichko.salesscanner.Services.ScannerAndUpdateService;
 public class BootUpReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        Intent serviceIntent = new Intent(context, ScannerAndUpdateService.class);
-        context.startService(serviceIntent);
+
+        if(!ScannerAndUpdateService.isServiceRunning(context)) {
+            Intent serviceIntent = new Intent(context, ScannerAndUpdateService.class);
+            context.startService(serviceIntent);
+        }
     }
 }

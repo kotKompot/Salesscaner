@@ -1,7 +1,13 @@
 package com.kirichko.salesscanner.datamodels;
 
 import android.content.Context;
-import android.content.pm.FeatureInfo;
+import android.widget.Toast;
+
+import com.kirichko.salesscanner.Util.ExternalFileCreator;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,38 +23,82 @@ import java.util.ArrayList;
 public class SettingsFileHolder {
 
     public static final String FILE_NAME = "SettingsFile";
-    public static final int ROUGH_SYMBOLS_NUMBER = 50;
+    public static final int ROUGH_SYMBOLS_NUMBER = 3000;
 
-    private File mSettingsFile;
-    private String mFileString;
+    private static String mFileString;
+    private static JSONObject mFileJSONObject;
 
-    public boolean mEnableSalesScanner;
-    public boolean mSaveBatteryMod;
-    public boolean mSaveInternetTrafficMod;
-    public ArrayList<Sale> mSales;
-    public ArrayList<Shop> mShops;
+    public static boolean mEnableSalesScanner;
+    public static boolean mSaveBatteryMod;
+    public static boolean mSaveInternetTrafficMod;
+    public static ArrayList<String> mSales;
+    public static ArrayList<String> mShops;
 
-    public SettingsFileHolder(boolean mEnableSalesScanner, boolean mSaveBatteryMod, boolean mSaveInternetTrafficMod, ArrayList<Sale> mSales, ArrayList<Shop> mShops) {
-        this.mEnableSalesScanner = mEnableSalesScanner;
-        this.mSaveBatteryMod = mSaveBatteryMod;
-        this.mSales = mSales;
-        this.mShops = mShops;
-        this.mSaveInternetTrafficMod = mSaveInternetTrafficMod;
+    public static boolean isAlreayReaded = false;
 
-       /* mFileString ="{ \"EnableSalesScanner\": \"true\"," +
-                "\"SaveBatteryMod\": \"False\", " +
-                "\"Sales\": [ \"Shoes\", \"Computers\", \"Food\" ], " +
-                "\"Shops\": [ \"Mvideo\", \"Ashan\", \"MTS\" ] }";
-                */
-        //сдесь создать jsonObject и взять его строку
+    public static void createNewSettingFile(Context context) {
+        createNewSettingFile(context, true, false, false,null, null);
     }
 
-    public boolean isSettingFileExists(){
-        mSettingsFile = new File(FILE_NAME);
-        return (mSettingsFile.exists());
+    public static void createNewSettingFile(Context context, boolean enableSalesScanner, boolean saveBatteryMod, boolean saveInternetTrafficMod,
+                                            ArrayList<String> sales, ArrayList<String> shops) {
+        mEnableSalesScanner = enableSalesScanner;
+        mSaveBatteryMod = saveBatteryMod;
+        mSaveInternetTrafficMod = saveInternetTrafficMod;
+        mSales = sales;
+        mShops = shops;
+
+
+        mFileJSONObject = new JSONObject();
+
+        try {
+            mFileJSONObject.put("EnableSalesScanner", mEnableSalesScanner);
+            mFileJSONObject.put("SaveBatteryMod", mSaveBatteryMod);
+            mFileJSONObject.put("SaveInternetTrafficMod", mSaveInternetTrafficMod);
+
+            if(mSales!=null) {
+                JSONArray salesJSONArray = new JSONArray();
+                for (String sale : mSales) {
+                    salesJSONArray.put(sale);
+                }
+                mFileJSONObject.put("Sales",salesJSONArray);
+            }
+
+            if (mShops!= null) {
+                JSONArray shopsJSONArray = new JSONArray();
+                for (String shop : mShops) {
+                    shopsJSONArray.put(shop);
+                }
+                mFileJSONObject.put("Shops", shopsJSONArray);
+            }
+
+            mFileString = mFileJSONObject.toString();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        FileOutputStream outputStream;
+        try
+        {
+            outputStream = context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
+            outputStream.write(mFileString.getBytes());
+            outputStream.close();
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        isAlreayReaded = true;
     }
 
-    public void readSettingsFile(Context context)
+    public static boolean isSettingFileExists(Context context){
+        boolean r = (context.getFileStreamPath(FILE_NAME)).exists();
+        return r;
+    }
+
+    public static void readSettingsFile(Context context)
     {
         FileInputStream fileInputStream = null;
         try {
@@ -63,20 +113,34 @@ public class SettingsFileHolder {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
 
-    public void createNewSettingsFile(Context context) {
+        try {
+            mFileJSONObject = new JSONObject(mFileString);
 
-        FileOutputStream outputStream;
-        try
-        {
-            outputStream = context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
-            outputStream.write(mFileString.getBytes());
-            outputStream.close();
-        }
-        catch (Exception e)
-        {
+            mEnableSalesScanner = mFileJSONObject.getBoolean("EnableSalesScanner");
+            mSaveBatteryMod = mFileJSONObject.getBoolean("SaveBatteryMod");
+            mSaveInternetTrafficMod = mFileJSONObject.getBoolean("SaveInternetTrafficMod");
+
+            JSONArray salesJSONArray = mFileJSONObject.getJSONArray("Sales");
+
+            mSales = new ArrayList<>(salesJSONArray.length());
+            for(int i=0; i<salesJSONArray.length(); ++i) {
+                mSales.add(salesJSONArray.getString(i));
+            }
+
+            JSONArray shopsJSONArray = mFileJSONObject.getJSONArray("Shops");
+
+            ArrayList<String> mShops = new ArrayList<>(shopsJSONArray.length());
+            for(int i=0; i<shopsJSONArray.length(); ++i) {
+                mShops.add(shopsJSONArray.getString(i));
+            }
+
+        } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        //ExternalFileCreator.createFile("Setting.txt","settings",mFileString);
+        isAlreayReaded = true;
     }
+
 }

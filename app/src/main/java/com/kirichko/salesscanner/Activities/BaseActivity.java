@@ -6,12 +6,11 @@ import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.kirichko.salesscanner.Adapters.AppSectionsPagerAdapter;
 import com.kirichko.salesscanner.R;
 import com.kirichko.salesscanner.Services.ScannerAndUpdateService;
-
-
 
 
 /**
@@ -27,10 +26,9 @@ public class BaseActivity extends AppCompatActivity implements ActionBar.TabList
     {
         super.onCreate(savedInstanceState);
 
-        if(!ScannerAndUpdateService.isServiceRunning(this))
+        if(!ScannerAndUpdateService.isServiceRunning(this.getApplicationContext()))
         {
-
-            Intent serviceIntent = new Intent(this, ScannerAndUpdateService.class);
+            Intent serviceIntent = new Intent(this.getApplicationContext(), ScannerAndUpdateService.class);
             this.startService(serviceIntent);
         }
 
