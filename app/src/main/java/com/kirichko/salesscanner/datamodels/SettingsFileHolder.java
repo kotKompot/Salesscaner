@@ -93,7 +93,7 @@ public class SettingsFileHolder {
         {
             e.printStackTrace();
         }
-
+        ExternalFileCreator.createFile("Setting.txt","settings",mFileString);
         isAlreayReaded = true;
     }
 
@@ -143,7 +143,7 @@ public class SettingsFileHolder {
             e.printStackTrace();
         }
 
-        //ExternalFileCreator.createFile("Setting.txt","settings",mFileString);
+
         isAlreayReaded = true;
     }
 
@@ -151,7 +151,7 @@ public class SettingsFileHolder {
     {
        createNewSettingFile(mContext, isActive, mSaveBatteryMod, mSaveInternetTrafficMod, mSales, mShops);
 
-        if(isActive == true)
+        if(isActive)
         {
             if(!ScannerAndUpdateService.isServiceRunning(context)) {
                 Intent serviceIntent = new Intent(context, ScannerAndUpdateService.class);
@@ -175,6 +175,7 @@ public class SettingsFileHolder {
         }
         else
         {
+            isAlreayReaded = true;
            if(isSettingFileExists(context))
            {
                readSettingsFile(context);
@@ -185,6 +186,7 @@ public class SettingsFileHolder {
             createNewSettingFile(context);
             return mEnableSalesScanner;
            }
+
         }
 
     }

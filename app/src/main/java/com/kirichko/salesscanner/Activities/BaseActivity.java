@@ -2,14 +2,12 @@ package com.kirichko.salesscanner.Activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.view.PagerTabStrip;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
@@ -82,4 +80,15 @@ public class BaseActivity extends AppCompatActivity implements ActionBar.TabList
         return true;
     }
 
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+
+        if(!ScannerAndUpdateService.isServiceRunning(this.getApplicationContext()))
+        {
+            Intent serviceIntent = new Intent(this.getApplicationContext(), ScannerAndUpdateService.class);
+            this.startService(serviceIntent);
+        }
+    }
 }

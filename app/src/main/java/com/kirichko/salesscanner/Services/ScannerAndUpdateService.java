@@ -38,6 +38,9 @@ import java.util.concurrent.TimeUnit;
         {
             startScannAndUpdateCycle();
         }
+        else {
+            offerStartSearchForDiscount();
+        }
 
         return START_STICKY;
     }
@@ -111,5 +114,6 @@ import java.util.concurrent.TimeUnit;
             }
         });
         alertBuilder.setCancelable(true);
+       // alertBuilder.show();
     }
 }
