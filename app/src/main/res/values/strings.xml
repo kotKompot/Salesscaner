@@ -5,4 +5,11 @@
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="searchForDiscountDisabled"> Поиск скидок не активен </string>
+    <string name="offerActivateSearchDiscount"> Включить? \n (расход заряда батареи немного увеличится) </string>
+    <string name="yes"> да </string>
+    <string name="no"> нет </string>
+    <string name="Map"> Карта </string>
+    <string name="Sales"> Скидки </string>
+    <string name="Shops"> Магазины </string>
 </resources>

@@ -1,16 +1,23 @@
 package com.kirichko.salesscanner.Activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.support.v4.view.PagerTabStrip;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 
 import com.kirichko.salesscanner.Adapters.AppSectionsPagerAdapter;
+import com.kirichko.salesscanner.ExternalCode.SlidingTabLayout;
 import com.kirichko.salesscanner.R;
 import com.kirichko.salesscanner.Services.ScannerAndUpdateService;
+import com.kirichko.salesscanner.datamodels.SettingsFileHolder;
 
 
 /**
@@ -18,13 +25,16 @@ import com.kirichko.salesscanner.Services.ScannerAndUpdateService;
  */
 public class BaseActivity extends AppCompatActivity implements ActionBar.TabListener {
 
+    Context context;
     AppSectionsPagerAdapter mAppSectionsPagerAdapter;
     ViewPager mViewPager;
+    SlidingTabLayout mSlidingTabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+        context = this;
 
         if(!ScannerAndUpdateService.isServiceRunning(this.getApplicationContext()))
         {
@@ -33,37 +43,14 @@ public class BaseActivity extends AppCompatActivity implements ActionBar.TabList
         }
 
         setContentView(R.layout.activity_base);
-        mAppSectionsPagerAdapter = new AppSectionsPagerAdapter(getSupportFragmentManager());
 
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.setHomeButtonEnabled(false);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
+        mAppSectionsPagerAdapter = new AppSectionsPagerAdapter(getSupportFragmentManager(), this);
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mAppSectionsPagerAdapter);
-        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                actionBar.setSelectedNavigationItem(position);
-            }
-        });
-        //Планируется сделаать map shops sales иконками, а не текстом
-            actionBar.addTab(
-                    actionBar.newTab()
-                            .setIcon(R.drawable.map)
-                            .setTabListener(this));
-
-            actionBar.addTab(
-                    actionBar.newTab()
-                            .setIcon(R.drawable.shops)
-                            .setTabListener(this));
-
-            actionBar.addTab(
-                    actionBar.newTab()
-                            .setIcon(R.drawable.sales)
-                            .setTabListener(this));
-
-
+        mSlidingTabLayout = ((SlidingTabLayout)  findViewById(R.id.pager_header));
+        mSlidingTabLayout.setDistributeEvenly(true);
+        mSlidingTabLayout.setViewPager(mViewPager);
     }
 
     @Override
@@ -77,6 +64,22 @@ public class BaseActivity extends AppCompatActivity implements ActionBar.TabList
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.switch_button_as_menu, menu);
+        Switch enableScannerSwitch  = (Switch)  menu.findItem(R.id.switchId).getActionView().findViewById(R.id.switchForActionBar);
+        enableScannerSwitch.setChecked(SettingsFileHolder.isEnableSalesScanner(this));
+        enableScannerSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                SettingsFileHolder.setScannerActive(isChecked, context);
+            }
+        });
+
+        return true;
     }
 
 }

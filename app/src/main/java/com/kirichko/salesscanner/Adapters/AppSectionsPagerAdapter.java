@@ -1,5 +1,6 @@
 package com.kirichko.salesscanner.Adapters;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -7,6 +8,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.kirichko.salesscanner.Controllers.MapPositioningController;
 import com.kirichko.salesscanner.Fragments.DummySectionFragment;
+import com.kirichko.salesscanner.R;
 
 
 /**
@@ -15,10 +17,12 @@ import com.kirichko.salesscanner.Fragments.DummySectionFragment;
 public class AppSectionsPagerAdapter extends FragmentPagerAdapter {
 
     private FragmentManager fm;
+    private Context mContext;
 
-    public AppSectionsPagerAdapter(FragmentManager fm) {
+    public AppSectionsPagerAdapter(FragmentManager fm, Context context) {
         super(fm);
         this.fm = fm;
+        this.mContext = context;
     }
 
     @Override
@@ -47,6 +51,15 @@ public class AppSectionsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return "Section " + (position + 1);
+        switch(position) {
+            case 0:
+                return mContext.getString(R.string.Map);
+            case 1:
+                return mContext.getString(R.string.Sales);
+            case 2:
+                return mContext.getString(R.string.Shops);
+        }
+        return "";
     }
+
 }

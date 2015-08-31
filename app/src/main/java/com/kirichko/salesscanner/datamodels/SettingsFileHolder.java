@@ -1,8 +1,10 @@
 package com.kirichko.salesscanner.datamodels;
 
 import android.content.Context;
+import android.content.Intent;
 import android.widget.Toast;
 
+import com.kirichko.salesscanner.Services.ScannerAndUpdateService;
 import com.kirichko.salesscanner.Util.ExternalFileCreator;
 
 import org.json.JSONArray;
@@ -21,6 +23,8 @@ import java.util.ArrayList;
  * Created by Киричко on 13.08.2015.
  */
 public class SettingsFileHolder {
+
+    public static Context mContext;
 
     public static final String FILE_NAME = "SettingsFile";
     public static final int ROUGH_SYMBOLS_NUMBER = 3000;
@@ -143,4 +147,45 @@ public class SettingsFileHolder {
         isAlreayReaded = true;
     }
 
+    public static void setScannerActive(boolean isActive, Context context)
+    {
+       createNewSettingFile(mContext, isActive, mSaveBatteryMod, mSaveInternetTrafficMod, mSales, mShops);
+
+        if(isActive == true)
+        {
+            if(!ScannerAndUpdateService.isServiceRunning(context)) {
+                Intent serviceIntent = new Intent(context, ScannerAndUpdateService.class);
+                context.startService(serviceIntent);
+            }
+        }
+        else
+        {
+            if(ScannerAndUpdateService.isServiceRunning(context)) {
+                Intent serviceIntent = new Intent(context, ScannerAndUpdateService.class);
+                context.stopService(serviceIntent);
+            }
+        }
+    }
+
+    public static boolean isEnableSalesScanner(Context context)
+    {
+        if(isAlreayReaded)
+        {
+            return mEnableSalesScanner;
+        }
+        else
+        {
+           if(isSettingFileExists(context))
+           {
+               readSettingsFile(context);
+               return mEnableSalesScanner;
+           }
+            else
+           {
+            createNewSettingFile(context);
+            return mEnableSalesScanner;
+           }
+        }
+
+    }
 }

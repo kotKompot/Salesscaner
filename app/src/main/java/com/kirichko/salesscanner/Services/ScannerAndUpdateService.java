@@ -1,10 +1,12 @@
 package com.kirichko.salesscanner.Services;
 
 import android.app.ActivityManager;
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.IBinder;
 import android.widget.Toast;
@@ -21,6 +23,8 @@ import java.util.concurrent.TimeUnit;
  */
  public class ScannerAndUpdateService extends Service {
 
+    private Context context;
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -28,22 +32,12 @@ import java.util.concurrent.TimeUnit;
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        context = this;
 
-            if (!SettingsFileHolder.isAlreayReaded) {
-                if (SettingsFileHolder.isSettingFileExists(this)) {
-                    SettingsFileHolder.readSettingsFile(this);
-                    if (SettingsFileHolder.mEnableSalesScanner) {
-                        startScannAndUpdateCycle();
-                    }
-                } else {
-                    SettingsFileHolder.createNewSettingFile(this);
-                    startScannAndUpdateCycle();
-                }
-            } else {
-                if (SettingsFileHolder.mEnableSalesScanner) {
-                    startScannAndUpdateCycle();
-                }
-            }
+        if(SettingsFileHolder.isEnableSalesScanner(this))
+        {
+            startScannAndUpdateCycle();
+        }
 
         return START_STICKY;
     }
@@ -103,5 +97,19 @@ import java.util.concurrent.TimeUnit;
                     }
                 }
                 return false;
+    }
+
+    private void offerStartSearchForDiscount()
+    {
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        alertBuilder.setTitle(R.string.searchForDiscountDisabled);
+        alertBuilder.setMessage(R.string.offerActivateSearchDiscount);
+        alertBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                startScannAndUpdateCycle();
+            }
+        });
+        alertBuilder.setCancelable(true);
     }
 }

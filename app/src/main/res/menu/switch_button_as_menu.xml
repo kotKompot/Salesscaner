@@ -1,0 +1,11 @@
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:SalesScanner="http://schemas.android.com/apk/res-auto" >
+    <item
+        android:id="@+id/switchId"
+        SalesScanner:actionLayout="@layout/action_bar_switch_button"
+        android:title=""
+        SalesScanner:showAsAction="always"
+        />
+
+</menu>

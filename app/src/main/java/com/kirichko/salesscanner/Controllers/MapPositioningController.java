@@ -21,7 +21,7 @@ public class MapPositioningController implements OnMapReadyCallback, LocationLis
     @Override
     public void onMapReady(GoogleMap map) {
         mGoogleMap = map;
-        map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         LatLng testMarker = new LatLng(55.929431, 37.518340);
 
         map.setMyLocationEnabled(true);
@@ -31,7 +31,7 @@ public class MapPositioningController implements OnMapReadyCallback, LocationLis
                 .snippet("moscow institute of physics and technology")
                 .position(testMarker));
     }
-    //Навигация конкретно в этом приложении еще не сделана, думаю как экономить батарею
+
     @Override
     public void onLocationChanged(Location location) {
     }
