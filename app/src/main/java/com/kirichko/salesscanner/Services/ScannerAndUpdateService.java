@@ -13,8 +13,13 @@ import android.widget.Toast;
 
 import com.kirichko.salesscanner.Activities.BaseActivity;
 import com.kirichko.salesscanner.R;
+import com.kirichko.salesscanner.Util.ExternalFileCreator;
 import com.kirichko.salesscanner.datamodels.SettingsFileHolder;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 
@@ -34,12 +39,9 @@ import java.util.concurrent.TimeUnit;
     public int onStartCommand(Intent intent, int flags, int startId) {
         context = this;
 
-        if(SettingsFileHolder.isEnableSalesScanner(this))
+        if(SettingsFileHolder.isEnableSalesScanner(this.getApplicationContext()))
         {
             startScannAndUpdateCycle();
-        }
-        else {
-            offerStartSearchForDiscount();
         }
 
         return START_STICKY;
@@ -48,7 +50,6 @@ import java.util.concurrent.TimeUnit;
     @Override
     public void onDestroy() {
         //возможно сдесь надо будет отключить базу данных
-        Toast.makeText(this,"Цикл завершен",Toast.LENGTH_LONG).show();
         stopForeground(true);
     }
 
@@ -60,7 +61,7 @@ import java.util.concurrent.TimeUnit;
         Notification note=new Notification(R.drawable.sales,
                 "Запуск поиска",
                 System.currentTimeMillis());
-        Intent i=new Intent(this, BaseActivity.class);
+        Intent i = new Intent(this, BaseActivity.class);
 
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|
                 Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -77,8 +78,6 @@ import java.util.concurrent.TimeUnit;
         ///del
 
 
-
-        Toast.makeText(this,"Цикл запущен",Toast.LENGTH_LONG).show();
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -102,18 +101,4 @@ import java.util.concurrent.TimeUnit;
                 return false;
     }
 
-    private void offerStartSearchForDiscount()
-    {
-        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-        alertBuilder.setTitle(R.string.searchForDiscountDisabled);
-        alertBuilder.setMessage(R.string.offerActivateSearchDiscount);
-        alertBuilder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                startScannAndUpdateCycle();
-            }
-        });
-        alertBuilder.setCancelable(true);
-       // alertBuilder.show();
-    }
 }

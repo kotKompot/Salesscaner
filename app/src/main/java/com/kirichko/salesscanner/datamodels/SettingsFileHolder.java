@@ -17,6 +17,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 /**
@@ -24,21 +25,19 @@ import java.util.ArrayList;
  */
 public class SettingsFileHolder {
 
-    public static Context mContext;
-
     public static final String FILE_NAME = "SettingsFile";
     public static final int ROUGH_SYMBOLS_NUMBER = 3000;
 
     private static String mFileString;
     private static JSONObject mFileJSONObject;
 
-    public static boolean mEnableSalesScanner;
-    public static boolean mSaveBatteryMod;
-    public static boolean mSaveInternetTrafficMod;
-    public static ArrayList<String> mSales;
-    public static ArrayList<String> mShops;
+    private static boolean mEnableSalesScanner = false;
+    private static boolean mSaveBatteryMod;
+    private static boolean mSaveInternetTrafficMod;
+    private static ArrayList<String> mSales;
+    private static ArrayList<String> mShops;
 
-    public static boolean isAlreayReaded = false;
+    public static boolean isAlreadyReaded = false;
 
     public static void createNewSettingFile(Context context) {
         createNewSettingFile(context, true, false, false,null, null);
@@ -56,6 +55,7 @@ public class SettingsFileHolder {
         mFileJSONObject = new JSONObject();
 
         try {
+
             mFileJSONObject.put("EnableSalesScanner", mEnableSalesScanner);
             mFileJSONObject.put("SaveBatteryMod", mSaveBatteryMod);
             mFileJSONObject.put("SaveInternetTrafficMod", mSaveInternetTrafficMod);
@@ -76,7 +76,7 @@ public class SettingsFileHolder {
                 mFileJSONObject.put("Shops", shopsJSONArray);
             }
 
-            mFileString = mFileJSONObject.toString();
+             mFileString = mFileJSONObject.toString() + "тест";
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -93,35 +93,39 @@ public class SettingsFileHolder {
         {
             e.printStackTrace();
         }
-        ExternalFileCreator.createFile("Setting.txt","settings",mFileString);
-        isAlreayReaded = true;
+        //ExternalFileCreator.createFile("SettingЗаписали.txt","settings",mFileString);
+        isAlreadyReaded = true;
     }
 
-    public static boolean isSettingFileExists(Context context){
+    private static boolean isSettingFileExists(Context context){
         boolean r = (context.getFileStreamPath(FILE_NAME)).exists();
         return r;
     }
 
     public static void readSettingsFile(Context context)
     {
-        FileInputStream fileInputStream = null;
+        FileInputStream fileInputStream;
+        String str="";
         try {
-            fileInputStream = context.openFileInput(FILE_NAME);
-            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-            char[] inputBuffer = new char[ROUGH_SYMBOLS_NUMBER];
-            inputStreamReader.read(inputBuffer);
-            mFileString = new String(inputBuffer);
+            fileInputStream  = context.openFileInput(FILE_NAME);
+            int c;
 
+            while( (c = fileInputStream.read()) != -1){
+                str = str + Character.toString((char)c);
+            }
+            fileInputStream.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+        mFileString = str;
 
         try {
             mFileJSONObject = new JSONObject(mFileString);
 
             mEnableSalesScanner = mFileJSONObject.getBoolean("EnableSalesScanner");
+
             mSaveBatteryMod = mFileJSONObject.getBoolean("SaveBatteryMod");
             mSaveInternetTrafficMod = mFileJSONObject.getBoolean("SaveInternetTrafficMod");
 
@@ -138,23 +142,25 @@ public class SettingsFileHolder {
             for(int i=0; i<shopsJSONArray.length(); ++i) {
                 mShops.add(shopsJSONArray.getString(i));
             }
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
 
-        isAlreayReaded = true;
+        //ExternalFileCreator.createFile("SettingПрочитали.txt", "settings", mFileString);
+        isAlreadyReaded = true;
     }
 
     public static void setScannerActive(boolean isActive, Context context)
     {
-       createNewSettingFile(mContext, isActive, mSaveBatteryMod, mSaveInternetTrafficMod, mSales, mShops);
+       createNewSettingFile(context, isActive, mSaveBatteryMod, mSaveInternetTrafficMod, mSales, mShops);
 
         if(isActive)
         {
+            Intent serviceIntent = new Intent(context, ScannerAndUpdateService.class);
+            context.stopService(serviceIntent);
+
             if(!ScannerAndUpdateService.isServiceRunning(context)) {
-                Intent serviceIntent = new Intent(context, ScannerAndUpdateService.class);
                 context.startService(serviceIntent);
             }
         }
@@ -169,13 +175,12 @@ public class SettingsFileHolder {
 
     public static boolean isEnableSalesScanner(Context context)
     {
-        if(isAlreayReaded)
+        if(isAlreadyReaded)
         {
             return mEnableSalesScanner;
         }
         else
         {
-            isAlreayReaded = true;
            if(isSettingFileExists(context))
            {
                readSettingsFile(context);
@@ -186,8 +191,6 @@ public class SettingsFileHolder {
             createNewSettingFile(context);
             return mEnableSalesScanner;
            }
-
         }
-
     }
 }
