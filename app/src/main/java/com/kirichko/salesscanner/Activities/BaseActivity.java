@@ -18,7 +18,6 @@ import com.kirichko.salesscanner.Adapters.AppSectionsPagerAdapter;
 import com.kirichko.salesscanner.ExternalCode.SlidingTabLayout;
 import com.kirichko.salesscanner.R;
 import com.kirichko.salesscanner.Services.ScannerAndUpdateService;
-
 import com.kirichko.salesscanner.datamodels.SettingsFileHolder;
 
 

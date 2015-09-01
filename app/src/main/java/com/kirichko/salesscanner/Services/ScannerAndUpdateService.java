@@ -1,25 +1,17 @@
 package com.kirichko.salesscanner.Services;
 
 import android.app.ActivityManager;
-import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.IBinder;
-import android.widget.Toast;
 
 import com.kirichko.salesscanner.Activities.BaseActivity;
 import com.kirichko.salesscanner.R;
-import com.kirichko.salesscanner.Util.ExternalFileCreator;
 import com.kirichko.salesscanner.datamodels.SettingsFileHolder;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 
@@ -55,9 +47,6 @@ import java.util.concurrent.TimeUnit;
 
     void startScannAndUpdateCycle() {
 
-
-        //del
-
         Notification note=new Notification(R.drawable.sales,
                 "Запуск поиска",
                 System.currentTimeMillis());
@@ -75,7 +64,6 @@ import java.util.concurrent.TimeUnit;
         note.flags|=Notification.FLAG_NO_CLEAR;
 
         startForeground(1337, note);
-        ///del
 
 
         new Thread(new Runnable() {
@@ -90,7 +78,6 @@ import java.util.concurrent.TimeUnit;
         }).start();
     }
 
-
     public static boolean isServiceRunning(Context context) {
                 ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
                 for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -100,5 +87,4 @@ import java.util.concurrent.TimeUnit;
                 }
                 return false;
     }
-
 }

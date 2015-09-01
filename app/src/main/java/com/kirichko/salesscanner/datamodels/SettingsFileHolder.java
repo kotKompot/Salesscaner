@@ -2,23 +2,18 @@ package com.kirichko.salesscanner.datamodels;
 
 import android.content.Context;
 import android.content.Intent;
-import android.widget.Toast;
-
-import com.kirichko.salesscanner.Services.ScannerAndUpdateService;
-import com.kirichko.salesscanner.Util.ExternalFileCreator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+
+import com.kirichko.salesscanner.Services.ScannerAndUpdateService;
 
 /**
  * Created by Киричко on 13.08.2015.
@@ -26,7 +21,6 @@ import java.util.ArrayList;
 public class SettingsFileHolder {
 
     public static final String FILE_NAME = "SettingsFile";
-    public static final int ROUGH_SYMBOLS_NUMBER = 3000;
 
     private static String mFileString;
     private static JSONObject mFileJSONObject;
@@ -93,7 +87,6 @@ public class SettingsFileHolder {
         {
             e.printStackTrace();
         }
-        //ExternalFileCreator.createFile("SettingЗаписали.txt","settings",mFileString);
         isAlreadyReaded = true;
     }
 
@@ -146,8 +139,6 @@ public class SettingsFileHolder {
             e.printStackTrace();
         }
 
-
-        //ExternalFileCreator.createFile("SettingПрочитали.txt", "settings", mFileString);
         isAlreadyReaded = true;
     }
 
