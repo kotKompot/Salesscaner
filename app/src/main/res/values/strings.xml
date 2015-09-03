@@ -3,7 +3,6 @@
     <string name="title_activity_maps">SalesScanner</string>
     <string name="dummy_section_text">Section %1d is just a dummy section.</string>
 
-<!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="searchForDiscountDisabled"> Поиск скидок не активен </string>
     <string name="offerActivateSearchDiscount"> Включить? \n (расход заряда батареи немного увеличится) </string>
@@ -12,4 +11,6 @@
     <string name="Map"> Карта </string>
     <string name="Sales"> Скидки </string>
     <string name="Shops"> Магазины </string>
+    <string name="OnMapButton"> На карте </string>
+    <string name="DeadLine"> Дата окончания: </string>
 </resources>

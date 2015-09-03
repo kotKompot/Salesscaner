@@ -1,14 +1,26 @@
 package com.kirichko.salesscanner.Adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.ListFragment;
+
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.kirichko.salesscanner.Controllers.MapPositioningController;
 import com.kirichko.salesscanner.Fragments.DummySectionFragment;
+import com.kirichko.salesscanner.Fragments.SalesListFragment;
+import com.kirichko.salesscanner.Fragments.WaitingForDataFragment;
 import com.kirichko.salesscanner.R;
+import com.kirichko.salesscanner.Util.GetSalesShopsAsync;
+import com.kirichko.salesscanner.datamodels.Sale;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 
 
 /**
@@ -18,30 +30,52 @@ public class AppSectionsPagerAdapter extends FragmentPagerAdapter {
 
     private FragmentManager fm;
     private Context mContext;
+    private MapPositioningController mMapPositioningController;
 
-    public AppSectionsPagerAdapter(FragmentManager fm, Context context) {
+    public AppSectionsPagerAdapter(FragmentManager fm, Context context, MapPositioningController mapPositioningController) {
         super(fm);
         this.fm = fm;
         this.mContext = context;
+        this.mMapPositioningController = mapPositioningController;
     }
 
     @Override
     public Fragment getItem(int i) {
-        if(i==0) {
+        switch(i)
+        {
+            case 0:
+                SupportMapFragment supportMapFragment = new SupportMapFragment();
+                supportMapFragment.getMapAsync(mMapPositioningController);
+                return supportMapFragment;
 
-            SupportMapFragment supportMapFragment = new SupportMapFragment();
-            supportMapFragment.getMapAsync(new MapPositioningController());
-            return supportMapFragment;
+            case 1:
 
+                    SalesListFragment salesListFragment = new SalesListFragment();
+                    ArrayList<Sale> sales = new ArrayList<>();
+                    try {
+                        sales.add(new Sale(2,2,"саб ночи в SUBWAY","скидка 20%","23.11.2015", new URL("http://bigbuzzy.ru/f/p/722/527/main.jpg"),
+                                new LatLng( 55.931848, 37.520094) ));
+
+                        sales.add(new Sale(1,5,"Торт суфле в шоколаднице", "скидка 60%","13.09.2015", new URL("http://bigbuzzy.ru/f/p/722/527/main.jpg"),
+                                new LatLng(55.937650, 37.518182 )));
+                        sales.add(new Sale(0,5,"Французские булочки в шоколаднице", "скидка 10%","23.05.2015", new URL("http://bigbuzzy.ru/f/p/722/527/main.jpg"),
+                                new LatLng(55.937650, 37.518182 )));
+                        sales.add(new Sale(0,2,"Ликвидация товара в пятерочке", "скидки от 19%","23.02.2015", new URL("http://bigbuzzy.ru/f/p/722/527/main.jpg"),
+                                new LatLng(55.937678, 37.508068 )));
+
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    }
+                    salesListFragment.setListAdapter(new SalesListAdapter((Activity) mContext, sales, mMapPositioningController));
+
+                    return salesListFragment;
+            
+            case 2:
+                Fragment fragment = new DummySectionFragment();
+                return fragment;
         }
-        else {
-            Fragment fragment = new DummySectionFragment();
-            Bundle args = new Bundle();
-            args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, i + 1);
-            fragment.setArguments(args);
-            return fragment;
-        }
 
+     return null;
     }
 
     @Override

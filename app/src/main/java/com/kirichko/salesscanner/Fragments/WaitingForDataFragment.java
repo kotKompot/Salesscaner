@@ -5,17 +5,17 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.kirichko.salesscanner.R;
 
-
-public class DummySectionFragment extends Fragment {
-
+/**
+ * Created by Киричко on 02.09.2015.
+ */
+public class WaitingForDataFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_section_dummy, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_waiting_for_data, container, false);
         return rootView;
     }
 }

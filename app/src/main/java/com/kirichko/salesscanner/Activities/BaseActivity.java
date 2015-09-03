@@ -15,9 +15,11 @@ import android.widget.Switch;
 
 
 import com.kirichko.salesscanner.Adapters.AppSectionsPagerAdapter;
+import com.kirichko.salesscanner.Controllers.MapPositioningController;
 import com.kirichko.salesscanner.ExternalCode.SlidingTabLayout;
 import com.kirichko.salesscanner.R;
 import com.kirichko.salesscanner.Services.ScannerAndUpdateService;
+import com.kirichko.salesscanner.Util.GetSalesShopsAsync;
 import com.kirichko.salesscanner.datamodels.SettingsFileHolder;
 
 
@@ -32,6 +34,7 @@ public class BaseActivity extends AppCompatActivity implements ActionBar.TabList
     private ViewPager mViewPager;
     private SlidingTabLayout mSlidingTabLayout;
     private Switch enableScannerSwitch;
+    private MapPositioningController mMapPositioningController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -42,14 +45,15 @@ public class BaseActivity extends AppCompatActivity implements ActionBar.TabList
         offerStartService(context);
 
         setContentView(R.layout.activity_base);
-
-        mAppSectionsPagerAdapter = new AppSectionsPagerAdapter(getSupportFragmentManager(), this);
+        mMapPositioningController = new MapPositioningController();
+        mAppSectionsPagerAdapter = new AppSectionsPagerAdapter(getSupportFragmentManager(), this,mMapPositioningController);
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mAppSectionsPagerAdapter);
         mSlidingTabLayout = ((SlidingTabLayout)  findViewById(R.id.pager_header));
         mSlidingTabLayout.setDistributeEvenly(true);
         mSlidingTabLayout.setViewPager(mViewPager);
-
+        GetSalesShopsAsync getSalesShopsAsync = new GetSalesShopsAsync(this,mMapPositioningController );
+        getSalesShopsAsync.execute();
     }
 
     @Override
